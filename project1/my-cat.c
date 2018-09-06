@@ -8,7 +8,6 @@ int main(int argc, char * argv[])
     for(int i=1; i<argc; i++)
     {
          char * fileName = argv[i];
-         printf("\n File name is %s \n---------------------\n", fileName);
          
         FILE *file = fopen(fileName, "r");
 
@@ -22,11 +21,11 @@ int main(int argc, char * argv[])
         }
         else 
         {
+            // printf("\n__\n \n");
             while((readLine = fgets(string, 100, file)) != NULL)
             {
                 printf("%s", readLine);
             }
-            printf("\n---------------------------\n");
         }
         fclose(file);
     }//end of for loop
