@@ -7,7 +7,7 @@ int main(int argc, char * argv[])
     //loop through arguments for file names
     for(int i=1; i<argc; i++)
     {
-         char * fileName = argv[i];
+         char *fileName = argv[i];
          
         FILE *file = fopen(fileName, "r");
 
