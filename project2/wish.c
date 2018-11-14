@@ -47,7 +47,6 @@ int main(int argc, char * argv[])
             //exit command
             if((strcmp(commands[0], "exit")) == 0)
             {
-                printf("I'm exitiing....\n");
                 exit(0);
             }
 
@@ -112,7 +111,7 @@ int main(int argc, char * argv[])
                 }
                 else if(newProcess == 0)
                 {
-                    execv(commands[0], commands);
+                    execvp(commands[0], commands);
                 }
                 else
                 {
