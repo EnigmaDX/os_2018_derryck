@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -8,13 +9,14 @@ int main(int argc, char * argv[])
     char *input;
     size_t bufsize = 32;
     size_t characters;
-    char *path = "/bin";
+    char pathArray[10];
+    strcpy(pathArray, "/bin/");
+
 
     input = (char *)malloc(bufsize * sizeof(char));
     if(input == NULL)
     {
         perror("Unable to allocate input");
-        // exit(1);
     }
     
     
@@ -37,57 +39,56 @@ int main(int argc, char * argv[])
   
             while(token != NULL)
             {
-                // printf(" %s\n", token); 
                 commands[commandCount] = token;
                 commandCount++;
                 token = strtok(NULL, " ");
             }
 
-            // printf("commandCount: %d \n", commandCount);
-
-            // for(int i=0; i<commandCount; i++)
-            // {
-            //     printf("token at %d is: %s \n", i, commands[i]);
-            // }
-
-            //exit
+            //exit command
             if((strcmp(commands[0], "exit")) == 0)
             {
                 printf("I'm exitiing....\n");
                 exit(0);
             }
 
-            //path
+            //path command
             else if((strcmp(commands[0], "path")) == 0)
             {
-                //
+                if(commands[1] == NULL)
+                {
+                    printf("No path specified \n");
+                }
+                
                 pid_t checkPath = fork();
                 if(checkPath < 0)
                 {
                     fprintf(stderr, "fork failed\n");
                 }
-
                 else if(checkPath == 0)
                 {
                     printf("pid: %d \n", (int)getpid);
-                    strcat(path,commands[1]); 
-                    printf("init path: %s", path);  
-                    if(access(path, X_OK))
-                    {
 
+                    strcat(pathArray,commands[1]); 
+                    printf("init path: %s \n", pathArray);  
+                    if(access(pathArray, X_OK))
+                    {
+                        printf("Path Activated \n");
+                        execv(commands[1], commands); 
+                        printf("Working \n");
                     }
+                    exit(0);
                 }
                 else
                 {
-                    // int checkPath_wait = wait(NULL);
-                    printf("no path created, fork value: %d \n", checkPath);
+                    int checkPath_wait = wait(NULL);
+                    printf("path process done.. \n");
                 }
                  
                 
 
             }
 
-            //cd
+            //cd command
             else if((strcmp(commands[0], "cd")) == 0)
             {
                 char *dir = strtok(commands[1], "\n");
@@ -99,11 +100,25 @@ int main(int argc, char * argv[])
                 {
                     printf("Error changing new dir \n");
                 }
-                
             }
+            
+            //other built-in commands
             else
             {
-                printf("Say Something!! \n");
+                int newProcess = fork();
+                if(newProcess < 0)
+                {
+                    fprintf(stderr, "fork failed\n");
+                }
+                else if(newProcess == 0)
+                {
+                    execv(commands[0], commands);
+                }
+                else
+                {
+                    wait(NULL);
+                }
+
             }
         }//end of while
     }
